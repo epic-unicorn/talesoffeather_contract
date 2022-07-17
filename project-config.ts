@@ -8,7 +8,7 @@ const frontEndContractConfigFile =
 const contractConfig = JSON.parse(
   fs.readFileSync(frontEndContractConfigFile, 'utf8')
 )
-const hiddenMetadataUri = 'ipfs://__CID__/hidden.json'
+const hiddenMetadataUri = 'ipfs://QmXWUTUkBuRZZsM1ivXZyYb3gKykkqSkfz449v9QPvq3DN/talesoffeather.json'
 
 const frontEndAllowlistFile = '../nextjs-nft-mint-dapp/config/allowlist.json'
 

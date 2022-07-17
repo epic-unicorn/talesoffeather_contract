@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-nft-smart-contract",
+  "name": "talesoffeather-contract",
   "private": true,
   "scripts": {
     "clean": "npx hardhat clean",

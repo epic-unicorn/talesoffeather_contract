@@ -30,7 +30,7 @@ task(
   }
 ).addPositionalParam('address', 'The given address')
 
-const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL
+const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL
 const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL
 
 const MUMBAI_TESTNET_RPC_URL =
@@ -64,11 +64,11 @@ const config: HardhatUserConfig = {
       // chainId: 31337,
       chainId: 1337,
     },
-    rinkeby: {
-      url: RINKEBY_RPC_URL || '',
+    goerli: {
+      url: GOERLI_RPC_URL || '',
       accounts:
         TESTNET_PRIVATE_KEY !== undefined ? [`0x${TESTNET_PRIVATE_KEY}`] : [],
-      chainId: 4,
+      chainId: 5,
     },
     mainnet: {
       url: MAINNET_RPC_URL || '',
@@ -98,7 +98,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      rinkeby: ETHERSCAN_API_KEY,
+      goerli: ETHERSCAN_API_KEY,
       mainnet: ETHERSCAN_API_KEY,
       mumbaiTestnet: POLYGONSCAN_API_KEY,
       polygonMainnet: POLYGONSCAN_API_KEY,

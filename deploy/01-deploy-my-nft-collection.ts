@@ -28,7 +28,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     ? 1
     : WAIT_BLOCK_CONFIRMATIONS
 
-  const myNftCollection = await deploy(contractName, {
+  const TalesOfFeather = await deploy(contractName, {
     from: deployer,
     args: args,
     log: true,
@@ -45,7 +45,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     try {
       await run('verify:verify', {
-        address: myNftCollection.address,
+        address: TalesOfFeather.address,
         contract: `contracts/${contractName}.sol:${contractName}`,
         constructorArguments: args,
       })
@@ -62,4 +62,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   }
 }
 export default func
-func.tags = ['MyNftCollection']
+func.tags = ['TalesOfFeather']

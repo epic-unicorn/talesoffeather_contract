@@ -7,8 +7,8 @@ import keccak256 from 'keccak256'
 import { developmentChains } from '../helper-hardhat-config'
 import { contractConfig, hiddenMetadataUri } from '../project-config'
 import {
-  MyNftCollectionMock as MockContractType,
-  MyNftCollection as ContractType,
+  TalesOfFeatherMock as MockContractType,
+  TalesOfFeather as ContractType,
 } from '../typechain-types'
 
 const allowlistAddresses = [
@@ -41,24 +41,24 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
 
 !developmentChains.includes(network.name)
   ? describe.skip
-  : describe('MyNftCollection Unit Test', function () {
+  : describe('TalesOfFeather Unit Test', function () {
       let deployer: SignerWithAddress,
         allowlistMinter: SignerWithAddress,
         publicMinter: SignerWithAddress,
         externalUser: SignerWithAddress,
-        myNftCollectionMock: MockContractType,
+        TalesOfFeatherMock: MockContractType,
         mockContractWithDeployer: MockContractType,
         mockContractWithAllowlistMinter: MockContractType,
         mockContractWithPublicMinter: MockContractType,
         mockContractWithExternalUser: MockContractType,
-        myNftCollection: ContractType,
+        TalesOfFeather: ContractType,
         contractWithDeployer: ContractType,
         contractWithAllowlistMinter: ContractType,
         contractWithPublicMinter: ContractType,
         contractWithExternalUser: ContractType
 
       before(async function () {
-        await deployments.fixture(['mocks', 'MyNftCollection'])
+        await deployments.fixture(['mocks', 'TalesOfFeather'])
         // const { deployer } = await getNamedAccounts()
         const accounts = await ethers.getSigners()
         deployer = accounts[0]
@@ -66,51 +66,51 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
         publicMinter = accounts[2]
         externalUser = accounts[3]
 
-        myNftCollectionMock = await ethers.getContract('MyNftCollectionMock')
-        mockContractWithDeployer = myNftCollectionMock.connect(deployer)
+        TalesOfFeatherMock = await ethers.getContract('TalesOfFeatherMock')
+        mockContractWithDeployer = TalesOfFeatherMock.connect(deployer)
         mockContractWithAllowlistMinter =
-          myNftCollectionMock.connect(allowlistMinter)
-        mockContractWithPublicMinter = myNftCollectionMock.connect(publicMinter)
-        mockContractWithExternalUser = myNftCollectionMock.connect(externalUser)
+          TalesOfFeatherMock.connect(allowlistMinter)
+        mockContractWithPublicMinter = TalesOfFeatherMock.connect(publicMinter)
+        mockContractWithExternalUser = TalesOfFeatherMock.connect(externalUser)
 
-        myNftCollection = await ethers.getContract('MyNftCollection')
-        contractWithDeployer = myNftCollection.connect(deployer)
-        contractWithAllowlistMinter = myNftCollection.connect(allowlistMinter)
-        contractWithPublicMinter = myNftCollection.connect(publicMinter)
-        contractWithExternalUser = myNftCollection.connect(externalUser)
+        TalesOfFeather = await ethers.getContract('TalesOfFeather')
+        contractWithDeployer = TalesOfFeather.connect(deployer)
+        contractWithAllowlistMinter = TalesOfFeather.connect(allowlistMinter)
+        contractWithPublicMinter = TalesOfFeather.connect(publicMinter)
+        contractWithExternalUser = TalesOfFeather.connect(externalUser)
       })
 
       describe('constructor()', function () {
-        it('initializes the MyNftCollection contract correctly', async function () {
-          assert.equal(await myNftCollection.getSaleState(), 0)
+        it('initializes the TalesOfFeather contract correctly', async function () {
+          assert.equal(await TalesOfFeather.getSaleState(), 0)
           assert.equal(
-            (await myNftCollection.getMaxSupply()).toString(),
+            (await TalesOfFeather.getMaxSupply()).toString(),
             contractConfig.maxSupply
           )
           assert.equal(
-            (await myNftCollection.getMintPrice()).toString(),
+            (await TalesOfFeather.getMintPrice()).toString(),
             calcTotalMintWei(
               contractConfig.saleType.allowlistSale.mintPrice,
               1
             ).toString()
           )
           assert.equal(
-            (await myNftCollection.getMaxMintAmountPerTx()).toString(),
+            (await TalesOfFeather.getMaxMintAmountPerTx()).toString(),
             contractConfig.saleType.allowlistSale.maxMintAmountPerTx
           )
           assert.equal(
-            await myNftCollection.getHiddenMetadataUri(),
+            await TalesOfFeather.getHiddenMetadataUri(),
             hiddenMetadataUri
           )
-          assert.isFalse(await myNftCollection.getRevealed())
+          assert.isFalse(await TalesOfFeather.getRevealed())
 
-          await expect(myNftCollection.tokenURI(1)).to.be.revertedWith(
-            'MyNftCollection__NonexistentToken'
+          await expect(TalesOfFeather.tokenURI(1)).to.be.revertedWith(
+            'TalesOfFeather_CustomError_NonexistentToken'
           )
 
           // The total supply of the mocked contract should be 99
           assert.equal(
-            (await myNftCollectionMock.totalSupply()).toString(),
+            (await TalesOfFeatherMock.totalSupply()).toString(),
             '99'
           )
         })
@@ -130,11 +130,11 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
           rootHash = merkleTree.getHexRoot()
 
           // Update the root hash
-          await myNftCollection.setMerkleRoot(rootHash)
+          await TalesOfFeather.setMerkleRoot(rootHash)
         })
 
         it('returns the value of the root just set', async function () {
-          assert.equal(await myNftCollection.getMerkleRoot(), rootHash)
+          assert.equal(await TalesOfFeather.getMerkleRoot(), rootHash)
         })
 
         it('reverts when sales are closed', async function () {
@@ -151,12 +151,12 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__AllowlistSaleClosed')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_AllowlistSaleClosed')
         })
 
         it('reverts when public sale is open', async function () {
           // Set sale state to Public Open
-          await myNftCollection.setPublicOpen()
+          await TalesOfFeather.setPublicOpen()
           await expect(
             contractWithAllowlistMinter.allowlistMint(
               1,
@@ -170,12 +170,12 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__AllowlistSaleClosed')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_AllowlistSaleClosed')
         })
 
         it('reverts if the mint amount is less than 1', async function () {
           // Set sale state to Allowlist Only
-          await myNftCollection.setAllowlistOnly()
+          await TalesOfFeather.setAllowlistOnly()
           await expect(
             contractWithAllowlistMinter.allowlistMint(
               0,
@@ -189,7 +189,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__InvalidMintAmount')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidMintAmount')
         })
 
         it('reverts if the mint amount is greater than maximum amount', async function () {
@@ -206,11 +206,11 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__InvalidMintAmount')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidMintAmount')
         })
 
         it('reverts if the maximum supply is exceeded when mint', async function () {
-          // Use the myNftCollectionMock contract
+          // Use the TalesOfFeatherMock contract
           await expect(
             mockContractWithAllowlistMinter.allowlistMint(
               2,
@@ -224,7 +224,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__MaxSupplyExceeded')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_MaxSupplyExceeded')
         })
 
         it('reverts if insufficient funds are sent', async function () {
@@ -241,7 +241,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ).sub(1),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__InsufficientFunds')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InsufficientFunds')
         })
 
         it('reverts if invalid proof is send', async function () {
@@ -258,7 +258,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__InvalidProof')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidProof')
         })
 
         it('reverts if someone pretends to be an allowlisted user', async function () {
@@ -275,7 +275,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__InvalidProof')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidProof')
         })
 
         it('reverts if no proof is sent', async function () {
@@ -286,7 +286,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 1
               ),
             })
-          ).to.be.revertedWith('MyNftCollection__InvalidProof')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidProof')
         })
 
         it('emits event after mint', async function () {
@@ -303,7 +303,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.emit(myNftCollection, 'Mint')
+          ).to.emit(TalesOfFeather, 'Mint')
         })
 
         it('reverts if the address is already claimed', async function () {
@@ -321,18 +321,18 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 ),
               }
             )
-          ).to.be.revertedWith('MyNftCollection__AddressAlreadyClaimed')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_AddressAlreadyClaimed')
         })
       })
 
       describe('publicMint()', function () {
         before(async function () {
-          await myNftCollection.setMintPrice(
+          await TalesOfFeather.setMintPrice(
             ethers.utils.parseEther(
               contractConfig.saleType.publicSale.mintPrice
             )
           )
-          await myNftCollection.setMaxMintAmountPerTx(
+          await TalesOfFeather.setMaxMintAmountPerTx(
             contractConfig.saleType.publicSale.maxMintAmountPerTx
           )
         })
@@ -345,12 +345,12 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 1
               ),
             })
-          ).to.be.revertedWith('MyNftCollection__PublicSaleClosed')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_PublicSaleClosed')
         })
 
         it('reverts when sales are closed', async function () {
           // Set sale state to Closed
-          await myNftCollection.setClosed()
+          await TalesOfFeather.setClosed()
           await expect(
             contractWithPublicMinter.publicMint(1, {
               value: calcTotalMintWei(
@@ -358,12 +358,12 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 1
               ),
             })
-          ).to.be.revertedWith('MyNftCollection__PublicSaleClosed')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_PublicSaleClosed')
         })
 
         it('reverts if the mint amount is less than 1', async function () {
           // Set sale state to Public Open
-          await myNftCollection.setPublicOpen()
+          await TalesOfFeather.setPublicOpen()
           await expect(
             contractWithPublicMinter.publicMint(0, {
               value: calcTotalMintWei(
@@ -371,7 +371,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 0
               ),
             })
-          ).to.be.revertedWith('MyNftCollection__InvalidMintAmount')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidMintAmount')
         })
 
         it('reverts if the mint amount is greater than maximum amount', async function () {
@@ -382,11 +382,11 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 11
               ),
             })
-          ).to.be.revertedWith('MyNftCollection__InvalidMintAmount')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidMintAmount')
         })
 
         it('reverts if the maximum supply is exceeded when mint', async function () {
-          // Use the myNftCollectionMock contract
+          // Use the TalesOfFeatherMock contract
           await expect(
             mockContractWithPublicMinter.publicMint(5, {
               value: calcTotalMintWei(
@@ -394,7 +394,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 5
               ),
             })
-          ).to.be.revertedWith('MyNftCollection__MaxSupplyExceeded')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_MaxSupplyExceeded')
         })
 
         it('reverts if insufficient funds are sent', async function () {
@@ -405,7 +405,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 1
               ).sub(1),
             })
-          ).to.be.revertedWith('MyNftCollection__InsufficientFunds')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InsufficientFunds')
         })
 
         it('emits event after mint', async function () {
@@ -416,7 +416,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
                 1
               ),
             })
-          ).to.emit(myNftCollection, 'Mint')
+          ).to.emit(TalesOfFeather, 'Mint')
         })
       })
 
@@ -427,7 +427,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
               0,
               await externalUser.getAddress()
             )
-          ).to.be.revertedWith('MyNftCollection__InvalidMintAmount')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidMintAmount')
         })
 
         it('reverts if the mint amount is greater than maximum amount', async function () {
@@ -436,7 +436,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
               11,
               await externalUser.getAddress()
             )
-          ).to.be.revertedWith('MyNftCollection__InvalidMintAmount')
+          ).to.be.revertedWith('TalesOfFeather_CustomError_InvalidMintAmount')
         })
 
         it('reverts if the minter is not the deployer', async function () {
@@ -472,55 +472,55 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
 
       describe('Reveal collection', function () {
         it('returns hidden metadata URI before the collection is revealed', async function () {
-          assert.equal(await myNftCollection.tokenURI(1), hiddenMetadataUri)
+          assert.equal(await TalesOfFeather.tokenURI(1), hiddenMetadataUri)
         })
 
         it('returns NFT metadata URI after the collection is revealed', async function () {
           const baseUri = 'ipfs://__COLLECTION_CID__/'
-          await myNftCollection.setBaseUri(baseUri)
-          await myNftCollection.setRevealed(true)
-          assert.equal(await myNftCollection.getBaseUri(), baseUri)
-          assert.equal(await myNftCollection.tokenURI(1), `${baseUri}1.json`)
+          await TalesOfFeather.setBaseUri(baseUri)
+          await TalesOfFeather.setRevealed(true)
+          assert.equal(await TalesOfFeather.getBaseUri(), baseUri)
+          assert.equal(await TalesOfFeather.tokenURI(1), `${baseUri}1.json`)
         })
       })
 
       describe('Test setter and getter functions', function () {
         it('returns 1 when Allowlist Only is set', async function () {
-          await myNftCollection.setAllowlistOnly()
-          assert.equal(await myNftCollection.getSaleState(), 1)
+          await TalesOfFeather.setAllowlistOnly()
+          assert.equal(await TalesOfFeather.getSaleState(), 1)
         })
 
         it('returns 2 when Public Open is set', async function () {
-          await myNftCollection.setPublicOpen()
-          assert.equal(await myNftCollection.getSaleState(), 2)
+          await TalesOfFeather.setPublicOpen()
+          assert.equal(await TalesOfFeather.getSaleState(), 2)
         })
 
         it('returns 0 when Closed is set', async function () {
-          await myNftCollection.setClosed()
-          assert.equal(await myNftCollection.getSaleState(), 0)
+          await TalesOfFeather.setClosed()
+          assert.equal(await TalesOfFeather.getSaleState(), 0)
         })
 
         it('returns the value of the mint price you set', async function () {
           const wei = ethers.utils.parseEther('1')
-          await myNftCollection.setMintPrice(wei)
+          await TalesOfFeather.setMintPrice(wei)
           assert.equal(
-            (await myNftCollection.getMintPrice()).toString(),
+            (await TalesOfFeather.getMintPrice()).toString(),
             wei.toString()
           )
         })
 
         it('returns the value of the maximum mint amount you set', async function () {
-          await myNftCollection.setMaxMintAmountPerTx(100)
+          await TalesOfFeather.setMaxMintAmountPerTx(100)
           assert.equal(
-            (await myNftCollection.getMaxMintAmountPerTx()).toString(),
+            (await TalesOfFeather.getMaxMintAmountPerTx()).toString(),
             '100'
           )
         })
 
         it('returns the hidden metadata URI you set', async function () {
           const newUri = 'ipfs://__NEW_CID__/hidden.json'
-          await myNftCollection.setHiddenMetadataUri(newUri)
-          assert.equal(await myNftCollection.getHiddenMetadataUri(), newUri)
+          await TalesOfFeather.setHiddenMetadataUri(newUri)
+          assert.equal(await TalesOfFeather.getHiddenMetadataUri(), newUri)
         })
       })
     })

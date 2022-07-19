@@ -11,31 +11,31 @@ const contractName = contractConfig.contractName
 const contractAddresses = contractConfig.contractAddresses
 
 async function updateAbi() {
-  const myNftCollection = await ethers.getContract(contractName)
+  const TalesOfFeather = await ethers.getContract(contractName)
 
   fs.writeFileSync(
     frontEndAbiFile,
-    myNftCollection.interface.format(ethers.utils.FormatTypes.json) as string
+    TalesOfFeather.interface.format(ethers.utils.FormatTypes.json) as string
   )
 }
 
 async function updateContractAddresses() {
-  const myNftCollection = await ethers.getContract(contractName)
+  const TalesOfFeather = await ethers.getContract(contractName)
 
   if (network.config.chainId) {
     if (network.config.chainId.toString() in contractAddresses) {
       if (
         !contractAddresses[network.config.chainId.toString()].includes(
-          myNftCollection.address
+          TalesOfFeather.address
         )
       ) {
         contractAddresses[network.config.chainId.toString()].push(
-          myNftCollection.address
+          TalesOfFeather.address
         )
       }
     } else {
       contractAddresses[network.config.chainId.toString()] = [
-        myNftCollection.address,
+        TalesOfFeather.address,
       ]
     }
     fs.writeFileSync(frontEndContractConfigFile, JSON.stringify(contractConfig))

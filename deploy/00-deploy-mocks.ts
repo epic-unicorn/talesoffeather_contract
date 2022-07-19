@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deploy } = deployments
     const { deployer } = await getNamedAccounts()
 
-    const nftName = 'MyNftCollection'
+    const nftName = 'TalesOfFeather'
     const nftSymbol = 'MNC'
     const hiddenMetadataUri = 'ipfs://__CID__/hidden.json'
     const maxSupply = 100
@@ -26,7 +26,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       maxMintAmountPerTx,
     ]
 
-    await deploy('MyNftCollectionMock', {
+    await deploy('TalesOfFeatherMock', {
       from: deployer,
       args: args,
       log: true,

@@ -7,21 +7,20 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-error MyNftCollection__InvalidMintAmount();
-error MyNftCollection__MaxSupplyExceeded();
-error MyNftCollection__InsufficientFunds();
-error MyNftCollection__AllowlistSaleClosed();
-error MyNftCollection__AddressAlreadyClaimed();
-error MyNftCollection__InvalidProof();
-error MyNftCollection__PublicSaleClosed();
-error MyNftCollection__TransferFailed();
-error MyNftCollection__NonexistentToken();
+error TalesOfFeather_CustomError_InvalidMintAmount();
+error TalesOfFeather_CustomError_MaxSupplyExceeded();
+error TalesOfFeather_CustomError_InsufficientFunds();
+error TalesOfFeather_CustomError_AllowlistSaleClosed();
+error TalesOfFeather_CustomError_AddressAlreadyClaimed();
+error TalesOfFeather_CustomError_InvalidProof();
+error TalesOfFeather_CustomError_PublicSaleClosed();
+error TalesOfFeather_CustomError_TransferFailed();
+error TalesOfFeather_CustomError_NonexistentToken();
 
-/// @title An NFT collection example with ERC721A
-/// @author Koji Mochizuki
-/// @notice This contract reduces gas for minting NFTs
+/// @title A story of feather on ERC721A
+/// @author EpicUnicorn 
 /// @dev This contract includes allowlist mint
-contract MyNftCollection is ERC721AQueryable, Ownable, ReentrancyGuard {
+contract TalesOfFeather is ERC721AQueryable, Ownable, ReentrancyGuard {
     using Strings for uint256;
 
     /// Type declarations
@@ -66,17 +65,17 @@ contract MyNftCollection is ERC721AQueryable, Ownable, ReentrancyGuard {
     /// Modifiers
     modifier mintCompliance(uint256 _mintAmount, uint256 _maxMintAmount) {
         if (_mintAmount < 1 || _mintAmount > _maxMintAmount)
-            revert MyNftCollection__InvalidMintAmount();
+            revert TalesOfFeather_CustomError_InvalidMintAmount();
 
         if (totalSupply() + _mintAmount > iMaxSupply)
-            revert MyNftCollection__MaxSupplyExceeded();
+            revert TalesOfFeather_CustomError_MaxSupplyExceeded();
 
         _;
     }
 
     modifier mintPriceCompliance(uint256 _mintAmount) {
         if (msg.value < sMintPrice * _mintAmount)
-            revert MyNftCollection__InsufficientFunds();
+            revert TalesOfFeather_CustomError_InsufficientFunds();
 
         _;
     }
@@ -89,15 +88,15 @@ contract MyNftCollection is ERC721AQueryable, Ownable, ReentrancyGuard {
         mintPriceCompliance(_mintAmount)
     {
         if (sSaleState != SaleState.AllowlistOnly)
-            revert MyNftCollection__AllowlistSaleClosed();
+            revert TalesOfFeather_CustomError_AllowlistSaleClosed();
 
         if (sAllowlistClaimed[_msgSender()])
-            revert MyNftCollection__AddressAlreadyClaimed();
+            revert TalesOfFeather_CustomError_AddressAlreadyClaimed();
 
         bytes32 leaf = keccak256(abi.encodePacked(_msgSender()));
 
         if (!MerkleProof.verify(_merkleProof, sMerkleRoot, leaf))
-            revert MyNftCollection__InvalidProof();
+            revert TalesOfFeather_CustomError_InvalidProof();
 
         sAllowlistClaimed[_msgSender()] = true;
 
@@ -113,7 +112,7 @@ contract MyNftCollection is ERC721AQueryable, Ownable, ReentrancyGuard {
         mintPriceCompliance(_mintAmount)
     {
         if (sSaleState != SaleState.PublicOpen)
-            revert MyNftCollection__PublicSaleClosed();
+            revert TalesOfFeather_CustomError_PublicSaleClosed();
 
         _safeMint(_msgSender(), _mintAmount);
 
@@ -132,7 +131,7 @@ contract MyNftCollection is ERC721AQueryable, Ownable, ReentrancyGuard {
         (bool success, ) = payable(owner()).call{value: address(this).balance}(
             ''
         );
-        if (!success) revert MyNftCollection__TransferFailed();
+        if (!success) revert TalesOfFeather_CustomError_TransferFailed();
     }
 
     function tokenURI(uint256 _tokenId)
@@ -142,7 +141,7 @@ contract MyNftCollection is ERC721AQueryable, Ownable, ReentrancyGuard {
         override
         returns (string memory)
     {
-        if (!_exists(_tokenId)) revert MyNftCollection__NonexistentToken();
+        if (!_exists(_tokenId)) revert TalesOfFeather_CustomError_NonexistentToken();
 
         if (sRevealed == false) return sHiddenMetadataUri;
 

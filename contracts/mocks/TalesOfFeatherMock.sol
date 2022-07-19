@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import '../MyNftCollection.sol';
+import '../TalesOfFeather.sol';
 
-/// @title A contract that mocked MyNftCollection
+/// @title A contract that mocked TalesOfFeather
 /// @dev This mock has a maximum supply set to 100, and 99 tokens are automatically minted when deployed
-contract MyNftCollectionMock is MyNftCollection {
+contract TalesOfFeatherMock is TalesOfFeather {
     constructor(
         string memory nftName,
         string memory nftSymbol,
@@ -14,7 +14,7 @@ contract MyNftCollectionMock is MyNftCollection {
         uint256 mintPrice,
         uint256 maxMintAmountPerTx
     )
-        MyNftCollection(
+        TalesOfFeather(
             nftName,
             nftSymbol,
             hiddenMetadataUri,

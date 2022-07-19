@@ -11,7 +11,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts()
 
     const nftName = 'TalesOfFeather'
-    const nftSymbol = 'MNC'
+    const nftSymbol = 'TOF'
     const hiddenMetadataUri = 'ipfs://__CID__/hidden.json'
     const maxSupply = 100
     const mintPrice = ethers.utils.parseEther('0.02')

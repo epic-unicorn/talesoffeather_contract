@@ -1,5 +1,6 @@
 # Tales of Feather - Smart Contract
 
+<<<<<<< HEAD
 An ERC721A-based NFT smart contract built with Hardhat for the Tales of Feather collection. Features include allowlist minting, public sales, owner mint functions, and collection reveal mechanics.
 
 All credits to https://github.com/kjmczk/hardhat-nft-smart-contract.git
@@ -275,3 +276,6 @@ REPORT_GAS=true npx hardhat test
 ## License
 
 This project is based on the work referenced above.
+=======
+This is where the story starts...
+>>>>>>> 1b773fe646bdf5c8d05206070f8d1a07ccc98059

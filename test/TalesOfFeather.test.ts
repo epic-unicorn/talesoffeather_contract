@@ -1,4 +1,5 @@
 import { ethers, network, deployments, getNamedAccounts } from 'hardhat'
+import 'hardhat-deploy'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { assert, expect } from 'chai'
 import { MerkleTree } from 'merkletreejs'
@@ -66,14 +67,16 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
         publicMinter = accounts[2]
         externalUser = accounts[3]
 
-        TalesOfFeatherMock = await ethers.getContract('TalesOfFeatherMock')
+        const talesOfFeatherMockDeployment = await deployments.get('TalesOfFeatherMock')
+        TalesOfFeatherMock = await ethers.getContractAt('TalesOfFeatherMock', talesOfFeatherMockDeployment.address)
         mockContractWithDeployer = TalesOfFeatherMock.connect(deployer)
         mockContractWithAllowlistMinter =
           TalesOfFeatherMock.connect(allowlistMinter)
         mockContractWithPublicMinter = TalesOfFeatherMock.connect(publicMinter)
         mockContractWithExternalUser = TalesOfFeatherMock.connect(externalUser)
 
-        TalesOfFeather = await ethers.getContract('TalesOfFeather')
+        const talesOfFeatherDeployment = await deployments.get('TalesOfFeather')
+        TalesOfFeather = await ethers.getContractAt('TalesOfFeather', talesOfFeatherDeployment.address)
         contractWithDeployer = TalesOfFeather.connect(deployer)
         contractWithAllowlistMinter = TalesOfFeather.connect(allowlistMinter)
         contractWithPublicMinter = TalesOfFeather.connect(publicMinter)
@@ -480,7 +483,7 @@ function calcTotalMintWei(mintPrice: string, mintAmount: number) {
           await TalesOfFeather.setBaseUri(baseUri)
           await TalesOfFeather.setRevealed(true)
           assert.equal(await TalesOfFeather.getBaseUri(), baseUri)
-          assert.equal(await TalesOfFeather.tokenURI(1), `${baseUri}1.json`)
+          assert.equal(await TalesOfFeather.tokenURI(1), `${baseUri}1`)
         })
       })
 

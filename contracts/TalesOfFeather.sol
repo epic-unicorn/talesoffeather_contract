@@ -148,7 +148,7 @@ contract TalesOfFeather is ERC721AQueryable, Ownable, ReentrancyGuard {
         return
             bytes(_baseURI()).length > 0
                 ? string(
-                    abi.encodePacked(_baseURI(), _tokenId.toString(), '.json')
+                    abi.encodePacked(_baseURI(), _tokenId.toString())
                 )
                 : '';
     }
